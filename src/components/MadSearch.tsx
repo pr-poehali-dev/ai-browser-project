@@ -143,27 +143,7 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
       return (bUrlMatch + bTitleMatch) - (aUrlMatch + aTitleMatch);
     });
 
-    if (searchResults.length === 0) {
-      setResults([
-        {
-          title: `Поиск "${query}" в интернете`,
-          url: `https://yandex.ru/search/?text=${encodeURIComponent(query)}`,
-          description: `Найти "${query}" через Яндекс`
-        },
-        {
-          title: `Поиск "${query}" в Google`,
-          url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-          description: `Найти "${query}" через Google`
-        },
-        {
-          title: `Поиск "${query}" на YouTube`,
-          url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
-          description: `Найти видео по запросу "${query}"`
-        }
-      ]);
-    } else {
-      setResults(searchResults);
-    }
+    setResults(searchResults);
 
     setIsLoading(false);
   };
