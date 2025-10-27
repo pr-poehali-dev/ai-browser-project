@@ -143,13 +143,26 @@ const Index = () => {
     <div className="flex flex-col h-screen bg-white">
       <div className="flex items-center gap-2 p-3 border-b shadow-sm bg-white">
         <form onSubmit={handleUrlSubmit} className="flex-1 flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="shrink-0">
-            <Icon name="ArrowLeft" size={20} />
+          <Button 
+            type="button"
+            variant="ghost" 
+            size="icon" 
+            className="shrink-0"
+            onClick={() => {
+              setCurrentUrl('');
+              setUrl('');
+              setSearchQuery('');
+            }}
+          >
+            <Icon name="Home" size={20} />
           </Button>
-          <Button variant="ghost" size="icon" className="shrink-0">
-            <Icon name="ArrowRight" size={20} />
-          </Button>
-          <Button variant="ghost" size="icon" className="shrink-0">
+          <Button 
+            type="button"
+            variant="ghost" 
+            size="icon" 
+            className="shrink-0"
+            onClick={() => currentUrl && setCurrentUrl(currentUrl)}
+          >
             <Icon name="RotateCw" size={20} />
           </Button>
           
@@ -344,10 +357,10 @@ const Index = () => {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
-                  { icon: 'Youtube', label: 'YouTube', url: 'https://youtube.com', color: 'text-red-500' },
-                  { icon: 'Mail', label: 'Gmail', url: 'https://mail.google.com', color: 'text-blue-500' },
+                  { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600' },
+                  { icon: 'Mail', label: 'Mail.ru', url: 'https://mail.ru', color: 'text-orange-500' },
                   { icon: 'Github', label: 'GitHub', url: 'https://github.com', color: 'text-gray-800' },
-                  { icon: 'Twitter', label: 'Twitter', url: 'https://twitter.com', color: 'text-sky-500' },
+                  { icon: 'Video', label: 'VK Video', url: 'https://vk.com/video', color: 'text-blue-500' },
                 ].map((item) => (
                   <Card 
                     key={item.label} 
