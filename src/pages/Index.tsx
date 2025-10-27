@@ -307,10 +307,7 @@ const Index = () => {
               <TabsContent value="ai" className="mt-4">
                 <Card className="h-[calc(100vh-240px)] flex flex-col">
                   <CardHeader>
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Icon name="Bot" size={18} />
-                      ИИ Помощник
-                    </CardTitle>
+                    <CardTitle className="text-base flex items-center gap-2">MadAI</CardTitle>
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col p-0">
                     <ScrollArea className="flex-1 px-4">
