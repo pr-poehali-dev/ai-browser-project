@@ -418,7 +418,7 @@ const Index = () => {
             <div className="max-w-2xl mx-auto space-y-8">
               <div className="text-center space-y-4 pt-20">
                 <h1 className="text-4xl font-bold text-gray-800">Mad Browser</h1>
-                <p className="text-gray-600">с искусственным интеллектом</p>
+                <p className="text-gray-600">С MadAI и Mad Search</p>
               </div>
 
               <div className="bg-white rounded-full shadow-lg p-2">
