@@ -26,7 +26,7 @@ const Index = () => {
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
-      const searchUrl = `https://yandex.ru/search/?text=${encodeURIComponent(query)}`;
+      const searchUrl = `https://go.mail.ru/search?q=${encodeURIComponent(query)}`;
       setUrl(searchUrl);
       setCurrentUrl(searchUrl);
       setSearchQuery('');
@@ -42,7 +42,7 @@ const Index = () => {
         if (url.includes('.')) {
           finalUrl = 'https://' + url;
         } else {
-          finalUrl = `https://yandex.ru/search/?text=${encodeURIComponent(url)}`;
+          finalUrl = `https://go.mail.ru/search?q=${encodeURIComponent(url)}`;
         }
       }
       setUrl(finalUrl);
@@ -110,6 +110,8 @@ const Index = () => {
       let content = 'Ответ получен';
       if (typeof data === 'string') {
         content = data;
+      } else if (data.ai_response?.content) {
+        content = data.ai_response.content;
       } else if (data.choices && data.choices[0]?.message?.content) {
         content = data.choices[0].message.content;
       } else if (data.response) {
@@ -346,7 +348,7 @@ const Index = () => {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Поиск в Яндекс или введите URL"
+                      placeholder="Поиск в Mail.ru или введите URL"
                       className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
                     />
                     <Button type="submit" size="icon" variant="ghost" className="shrink-0">
