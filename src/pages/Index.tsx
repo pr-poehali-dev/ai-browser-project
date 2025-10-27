@@ -441,16 +441,22 @@ const Index = () => {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
-                  { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600' },
-                  { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400' },
-                  { icon: 'MessageCircle', label: 'VK', url: 'https://vk.com', color: 'text-blue-500' },
-                  { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600' },
-                  { icon: 'MessageSquare', label: 'Avito', url: 'https://avito.ru', color: 'text-blue-500' },
+                  { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600', openInApp: false },
+                  { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400', openInApp: true },
+                  { icon: 'MessageCircle', label: 'VK', url: 'https://vk.com', color: 'text-blue-500', openInApp: false },
+                  { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600', openInApp: false },
+                  { icon: 'MessageSquare', label: 'Avito', url: 'https://avito.ru', color: 'text-blue-500', openInApp: false },
                 ].map((item) => (
                   <Card 
                     key={item.label} 
                     className="hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => handleNavigate(item.url)}
+                    onClick={() => {
+                      if (item.openInApp) {
+                        window.open(item.url, '_blank');
+                      } else {
+                        handleNavigate(item.url);
+                      }
+                    }}
                   >
                     <CardContent className="flex flex-col items-center justify-center p-6 gap-2">
                       <Icon name={item.icon} size={32} className={item.color} />
