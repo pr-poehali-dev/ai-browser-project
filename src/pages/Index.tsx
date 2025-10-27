@@ -411,6 +411,7 @@ const Index = () => {
                   { icon: 'Mail', label: 'Mail.ru', url: 'https://mail.ru', color: 'text-orange-500' },
                   { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400' },
                   { icon: 'MessageCircle', label: 'VK', url: 'https://vk.com', color: 'text-blue-500' },
+                  { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600' },
                 ].map((item) => (
                   <Card 
                     key={item.label} 

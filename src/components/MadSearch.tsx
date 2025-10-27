@@ -118,6 +118,12 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
       url: 'https://poehali.dev',
       description: 'Poehali.Dev - разработка сайтов через русский язык с ИИ',
       favicon: '🚀'
+    },
+    {
+      title: 'Kion - онлайн-кинотеатр',
+      url: 'https://kion.ru',
+      description: 'Kion - смотрите фильмы, сериалы и ТВ онлайн',
+      favicon: '📺'
     }
   ];
 
