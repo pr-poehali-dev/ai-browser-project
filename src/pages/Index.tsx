@@ -26,7 +26,9 @@ const Index = () => {
   const handleSearch = (query: string) => {
     if (query.trim()) {
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+      window.open(searchUrl, '_blank');
       setUrl(searchUrl);
+      setSearchQuery('');
       toast.success('Поиск выполнен');
     }
   };
@@ -36,10 +38,15 @@ const Index = () => {
     if (url.trim()) {
       let finalUrl = url;
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        finalUrl = 'https://' + url;
+        if (url.includes('.')) {
+          finalUrl = 'https://' + url;
+        } else {
+          finalUrl = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
+        }
       }
+      window.open(finalUrl, '_blank');
       setUrl(finalUrl);
-      toast.success('Переход по адресу');
+      toast.success('Переход выполнен');
     }
   };
 
@@ -92,10 +99,29 @@ const Index = () => {
         })
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
+      console.log('AI Response:', data);
+      
+      let content = 'Ответ получен';
+      if (typeof data === 'string') {
+        content = data;
+      } else if (data.choices && data.choices[0]?.message?.content) {
+        content = data.choices[0].message.content;
+      } else if (data.response) {
+        content = data.response;
+      } else if (data.message) {
+        content = data.message;
+      } else if (data.content) {
+        content = data.content;
+      }
+      
       const assistantMessage = {
         role: 'assistant' as const,
-        content: data.response || data.message || 'Ответ получен'
+        content: content
       };
       setChatMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
