@@ -15,6 +15,7 @@ interface Message {
 
 const Index = () => {
   const [url, setUrl] = useState('');
+  const [currentUrl, setCurrentUrl] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [desktopMode, setDesktopMode] = useState(false);
   const [calcInput, setCalcInput] = useState('');
@@ -26,8 +27,8 @@ const Index = () => {
   const handleSearch = (query: string) => {
     if (query.trim()) {
       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-      window.open(searchUrl, '_blank');
       setUrl(searchUrl);
+      setCurrentUrl(searchUrl);
       setSearchQuery('');
       toast.success('Поиск выполнен');
     }
@@ -44,8 +45,8 @@ const Index = () => {
           finalUrl = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
         }
       }
-      window.open(finalUrl, '_blank');
       setUrl(finalUrl);
+      setCurrentUrl(finalUrl);
       toast.success('Переход выполнен');
     }
   };
@@ -91,15 +92,14 @@ const Index = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          apiKey: 'madai_EyxjfmsyDZWU35NR1BFFmMVBid8Zk6iWWT8V26iyRxM',
-          messages: [...chatMessages, userMessage].map(m => ({
-            role: m.role,
-            content: m.content
-          }))
+          prompt: chatInput,
+          apiKey: 'madai_EyxjfmsyDZWU35NR1BFFmMVBid8Zk6iWWT8V26iyRxM'
         })
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('AI Error:', errorText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
@@ -117,6 +117,10 @@ const Index = () => {
         content = data.message;
       } else if (data.content) {
         content = data.content;
+      } else if (data.answer) {
+        content = data.answer;
+      } else if (data.text) {
+        content = data.text;
       }
       
       const assistantMessage = {
@@ -125,8 +129,9 @@ const Index = () => {
       };
       setChatMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
+      console.error('Chat error:', error);
       toast.error('Ошибка соединения с ИИ');
-      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Ошибка соединения' }]);
+      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Ошибка соединения с ИИ' }]);
     } finally {
       setIsLoading(false);
     }
@@ -303,47 +308,65 @@ const Index = () => {
         </Sheet>
       </div>
 
-      <div className="flex-1 bg-gray-50 p-6 overflow-auto">
-        <div className="max-w-2xl mx-auto space-y-8">
-          <div className="text-center space-y-4 pt-20">
-            <h1 className="text-4xl font-bold text-gray-800">Умный Браузер</h1>
-            <p className="text-gray-600">с искусственным интеллектом</p>
-          </div>
-
-          <div className="bg-white rounded-full shadow-lg p-2">
-            <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchQuery); }}>
-              <div className="flex items-center gap-2 px-4">
-                <Icon name="Search" size={20} className="text-gray-400" />
-                <Input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Поиск в Google или введите URL"
-                  className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
-                />
-                <Button type="submit" size="icon" variant="ghost" className="shrink-0">
-                  <Icon name="ArrowRight" size={20} />
-                </Button>
+      <div className="flex-1 bg-gray-50 overflow-hidden relative">
+        {currentUrl ? (
+          <iframe
+            src={currentUrl}
+            className="w-full h-full border-0"
+            title="Browser Content"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"
+          />
+        ) : (
+          <div className="p-6 overflow-auto h-full">
+            <div className="max-w-2xl mx-auto space-y-8">
+              <div className="text-center space-y-4 pt-20">
+                <h1 className="text-4xl font-bold text-gray-800">Умный Браузер</h1>
+                <p className="text-gray-600">с искусственным интеллектом</p>
               </div>
-            </form>
-          </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[
-              { icon: 'Youtube', label: 'YouTube', color: 'text-red-500' },
-              { icon: 'Mail', label: 'Gmail', color: 'text-blue-500' },
-              { icon: 'Github', label: 'GitHub', color: 'text-gray-800' },
-              { icon: 'Twitter', label: 'Twitter', color: 'text-sky-500' },
-            ].map((item) => (
-              <Card key={item.label} className="hover:shadow-md transition-shadow cursor-pointer">
-                <CardContent className="flex flex-col items-center justify-center p-6 gap-2">
-                  <Icon name={item.icon} size={32} className={item.color} />
-                  <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                </CardContent>
-              </Card>
-            ))}
+              <div className="bg-white rounded-full shadow-lg p-2">
+                <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchQuery); }}>
+                  <div className="flex items-center gap-2 px-4">
+                    <Icon name="Search" size={20} className="text-gray-400" />
+                    <Input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Поиск в Google или введите URL"
+                      className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
+                    />
+                    <Button type="submit" size="icon" variant="ghost" className="shrink-0">
+                      <Icon name="ArrowRight" size={20} />
+                    </Button>
+                  </div>
+                </form>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {[
+                  { icon: 'Youtube', label: 'YouTube', url: 'https://youtube.com', color: 'text-red-500' },
+                  { icon: 'Mail', label: 'Gmail', url: 'https://mail.google.com', color: 'text-blue-500' },
+                  { icon: 'Github', label: 'GitHub', url: 'https://github.com', color: 'text-gray-800' },
+                  { icon: 'Twitter', label: 'Twitter', url: 'https://twitter.com', color: 'text-sky-500' },
+                ].map((item) => (
+                  <Card 
+                    key={item.label} 
+                    className="hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => {
+                      setUrl(item.url);
+                      setCurrentUrl(item.url);
+                    }}
+                  >
+                    <CardContent className="flex flex-col items-center justify-center p-6 gap-2">
+                      <Icon name={item.icon} size={32} className={item.color} />
+                      <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
