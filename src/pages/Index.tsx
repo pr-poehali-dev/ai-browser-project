@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
+import MadSearch from '@/components/MadSearch';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -17,6 +18,7 @@ const Index = () => {
   const [url, setUrl] = useState('');
   const [currentUrl, setCurrentUrl] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showMadSearch, setShowMadSearch] = useState(false);
   const [desktopMode, setDesktopMode] = useState(false);
   const [calcInput, setCalcInput] = useState('');
   const [calcResult, setCalcResult] = useState('');
@@ -27,13 +29,18 @@ const Index = () => {
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
-      const searchUrl = `https://go.mail.ru/search?q=${encodeURIComponent(query)}`;
-      setUrl(searchUrl);
-      setCurrentUrl(searchUrl);
-      setSearchQuery('');
-      setIframeError(false);
-      toast.success('Поиск выполнен');
+      setSearchQuery(query);
+      setShowMadSearch(true);
+      setCurrentUrl('');
     }
+  };
+
+  const handleNavigate = (targetUrl: string) => {
+    setUrl(targetUrl);
+    setCurrentUrl(targetUrl);
+    setShowMadSearch(false);
+    setIframeError(false);
+    toast.success('Переход выполнен');
   };
 
   const handleUrlSubmit = (e: React.FormEvent) => {
@@ -158,6 +165,7 @@ const Index = () => {
               setCurrentUrl('');
               setUrl('');
               setSearchQuery('');
+              setShowMadSearch(false);
             }}
           >
             <Icon name="Home" size={20} />
@@ -328,7 +336,9 @@ const Index = () => {
       </div>
 
       <div className="flex-1 bg-gray-50 overflow-hidden relative">
-        {currentUrl ? (
+        {showMadSearch ? (
+          <MadSearch onNavigate={handleNavigate} initialQuery={searchQuery} />
+        ) : currentUrl ? (
           <div className="w-full h-full relative">
             <iframe
               src={currentUrl}
@@ -385,7 +395,7 @@ const Index = () => {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Поиск в Mail.ru или введите URL"
+                      placeholder="Поиск в Mad Search или введите URL"
                       className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
                     />
                     <Button type="submit" size="icon" variant="ghost" className="shrink-0">
@@ -400,15 +410,12 @@ const Index = () => {
                   { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600' },
                   { icon: 'Mail', label: 'Mail.ru', url: 'https://mail.ru', color: 'text-orange-500' },
                   { icon: 'Github', label: 'GitHub', url: 'https://github.com', color: 'text-gray-800' },
-                  { icon: 'Video', label: 'VK Video', url: 'https://vk.com/video', color: 'text-blue-500' },
+                  { icon: 'MessageCircle', label: 'VK', url: 'https://vk.com', color: 'text-blue-500' },
                 ].map((item) => (
                   <Card 
                     key={item.label} 
                     className="hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => {
-                      setUrl(item.url);
-                      setCurrentUrl(item.url);
-                    }}
+                    onClick={() => handleNavigate(item.url)}
                   >
                     <CardContent className="flex flex-col items-center justify-center p-6 gap-2">
                       <Icon name={item.icon} size={32} className={item.color} />
