@@ -23,52 +23,100 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
 
   const popularSites: SearchResult[] = [
     {
-      title: 'Rutube',
+      title: 'Rutube - Российский видеохостинг',
       url: 'https://rutube.ru',
-      description: 'Российский видеохостинг - смотрите видео онлайн',
+      description: 'Смотрите видео онлайн: фильмы, сериалы, музыка, блоги',
       favicon: '📺'
     },
     {
-      title: 'VK',
+      title: 'ВКонтакте - социальная сеть',
       url: 'https://vk.com',
-      description: 'Социальная сеть ВКонтакте',
+      description: 'VK - общение, музыка, видео, игры и новости',
       favicon: '💬'
     },
     {
-      title: 'Яндекс',
+      title: 'Яндекс - поисковая система',
       url: 'https://yandex.ru',
-      description: 'Поисковая система, почта, карты и другие сервисы',
+      description: 'Поиск информации, почта Яндекс, карты, погода, новости',
       favicon: '🔍'
     },
     {
-      title: 'Mail.ru',
+      title: 'Mail.ru - почта и портал',
       url: 'https://mail.ru',
-      description: 'Почта, новости, поиск и развлечения',
+      description: 'Электронная почта Mail.ru, новости, поиск, развлечения',
       favicon: '✉️'
     },
     {
-      title: 'GitHub',
+      title: 'GitHub - платформа разработки',
       url: 'https://github.com',
-      description: 'Платформа для разработчиков и совместной работы',
+      description: 'GitHub для разработчиков: репозитории, код, совместная работа',
       favicon: '💻'
     },
     {
-      title: 'Wikipedia',
+      title: 'Википедия - свободная энциклопедия',
       url: 'https://ru.wikipedia.org',
-      description: 'Свободная энциклопедия',
+      description: 'Wikipedia - статьи, знания, информация на русском языке',
       favicon: '📚'
     },
     {
-      title: 'YouTube',
+      title: 'YouTube - видеохостинг',
       url: 'https://youtube.com',
-      description: 'Смотрите и загружайте видео',
+      description: 'Смотрите и загружайте видео на YouTube',
       favicon: '🎥'
     },
     {
-      title: 'Habr',
+      title: 'Habr - IT сообщество',
       url: 'https://habr.com',
-      description: 'Сообщество IT-специалистов',
+      description: 'Хабр - статьи о программировании, технологиях и разработке',
       favicon: '🛠️'
+    },
+    {
+      title: 'Telegram Web',
+      url: 'https://web.telegram.org',
+      description: 'Telegram - мессенджер для общения и каналов',
+      favicon: '✈️'
+    },
+    {
+      title: 'Ozon - интернет-магазин',
+      url: 'https://ozon.ru',
+      description: 'OZON - онлайн покупки, товары, доставка',
+      favicon: '🛒'
+    },
+    {
+      title: 'Wildberries - маркетплейс',
+      url: 'https://wildberries.ru',
+      description: 'WB - одежда, обувь, электроника с доставкой',
+      favicon: '🛍️'
+    },
+    {
+      title: 'Avito - объявления',
+      url: 'https://avito.ru',
+      description: 'Авито - купить и продать товары, услуги, недвижимость',
+      favicon: '📢'
+    },
+    {
+      title: 'Кинопоиск',
+      url: 'https://kinopoisk.ru',
+      description: 'Кинопоиск - фильмы, сериалы, рейтинги и рецензии',
+      favicon: '🎬'
+    },
+    {
+      title: 'Лайфхакер',
+      url: 'https://lifehacker.ru',
+      description: 'Lifehacker - советы, лайфхаки, технологии',
+      favicon: '💡'
+    },
+    {
+      title: 'РБК - новости',
+      url: 'https://rbc.ru',
+      description: 'RBC - новости экономики, бизнеса, финансов',
+      favicon: '📰'
+    },
+    {
+      title: 'Дзен - контент',
+      url: 'https://dzen.ru',
+      description: 'Яндекс Дзен - статьи, видео, новости по интересам',
+      favicon: '📱'
     }
   ];
 
@@ -78,11 +126,22 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
 
     setIsLoading(true);
 
-    const searchResults = popularSites.filter(site => 
-      site.title.toLowerCase().includes(query.toLowerCase()) ||
-      site.description.toLowerCase().includes(query.toLowerCase()) ||
-      site.url.toLowerCase().includes(query.toLowerCase())
-    );
+    const lowerQuery = query.toLowerCase();
+    const searchResults = popularSites.filter(site => {
+      const titleMatch = site.title.toLowerCase().includes(lowerQuery);
+      const descMatch = site.description.toLowerCase().includes(lowerQuery);
+      const urlMatch = site.url.toLowerCase().includes(lowerQuery);
+      const domainMatch = site.url.replace('https://', '').replace('http://', '').split('/')[0].includes(lowerQuery);
+      
+      return titleMatch || descMatch || urlMatch || domainMatch;
+    }).sort((a, b) => {
+      const aUrlMatch = a.url.toLowerCase().includes(lowerQuery) ? 2 : 0;
+      const aTitleMatch = a.title.toLowerCase().includes(lowerQuery) ? 1 : 0;
+      const bUrlMatch = b.url.toLowerCase().includes(lowerQuery) ? 2 : 0;
+      const bTitleMatch = b.title.toLowerCase().includes(lowerQuery) ? 1 : 0;
+      
+      return (bUrlMatch + bTitleMatch) - (aUrlMatch + aTitleMatch);
+    });
 
     if (searchResults.length === 0) {
       setResults([
@@ -113,16 +172,8 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
     <div className="min-h-screen bg-white flex flex-col">
       <div className="container max-w-3xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-6xl font-bold mb-2">
-            <span className="text-blue-500">M</span>
-            <span className="text-red-500">a</span>
-            <span className="text-yellow-500">d</span>
-            <span className="text-blue-500"> S</span>
-            <span className="text-green-500">e</span>
-            <span className="text-red-500">a</span>
-            <span className="text-purple-500">r</span>
-            <span className="text-orange-500">c</span>
-            <span className="text-blue-500">h</span>
+          <h1 className="text-6xl font-bold mb-2 text-black">
+            Mad Search
           </h1>
           <p className="text-gray-600">Умный поиск с ИИ</p>
         </div>
