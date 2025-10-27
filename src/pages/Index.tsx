@@ -409,7 +409,7 @@ const Index = () => {
                 {[
                   { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600' },
                   { icon: 'Mail', label: 'Mail.ru', url: 'https://mail.ru', color: 'text-orange-500' },
-                  { icon: 'Github', label: 'GitHub', url: 'https://github.com', color: 'text-gray-800' },
+                  { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400' },
                   { icon: 'MessageCircle', label: 'VK', url: 'https://vk.com', color: 'text-blue-500' },
                 ].map((item) => (
                   <Card 
