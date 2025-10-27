@@ -23,6 +23,7 @@ const Index = () => {
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [chatInput, setChatInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [iframeError, setIframeError] = useState(false);
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
@@ -30,6 +31,7 @@ const Index = () => {
       setUrl(searchUrl);
       setCurrentUrl(searchUrl);
       setSearchQuery('');
+      setIframeError(false);
       toast.success('Поиск выполнен');
     }
   };
@@ -47,6 +49,7 @@ const Index = () => {
       }
       setUrl(finalUrl);
       setCurrentUrl(finalUrl);
+      setIframeError(false);
       toast.success('Переход выполнен');
     }
   };
@@ -326,12 +329,46 @@ const Index = () => {
 
       <div className="flex-1 bg-gray-50 overflow-hidden relative">
         {currentUrl ? (
-          <iframe
-            src={currentUrl}
-            className="w-full h-full border-0"
-            title="Browser Content"
-            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"
-          />
+          <div className="w-full h-full relative">
+            <iframe
+              src={currentUrl}
+              className="w-full h-full border-0"
+              title="Browser Content"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"
+              onError={() => setIframeError(true)}
+            />
+            {iframeError && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-white p-8">
+                <Icon name="AlertCircle" size={64} className="text-orange-500 mb-4" />
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Сайт заблокировал загрузку</h2>
+                <p className="text-gray-600 text-center mb-6 max-w-md">
+                  Некоторые сайты не разрешают открытие в браузере.
+                  Откройте сайт в новой вкладке.
+                </p>
+                <Button
+                  onClick={() => {
+                    window.open(currentUrl, '_blank');
+                    setIframeError(false);
+                  }}
+                  className="mb-2"
+                >
+                  <Icon name="ExternalLink" size={18} className="mr-2" />
+                  Открыть в новой вкладке
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setCurrentUrl('');
+                    setUrl('');
+                    setIframeError(false);
+                  }}
+                >
+                  <Icon name="Home" size={18} className="mr-2" />
+                  Вернуться на главную
+                </Button>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="p-6 overflow-auto h-full">
             <div className="max-w-2xl mx-auto space-y-8">
