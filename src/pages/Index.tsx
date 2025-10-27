@@ -445,13 +445,9 @@ const Index = () => {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
                   { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600' },
-                  { icon: 'Mail', label: 'Mail.ru', url: 'https://mail.ru', color: 'text-orange-500' },
                   { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400' },
                   { icon: 'MessageCircle', label: 'VK', url: 'https://vk.com', color: 'text-blue-500' },
                   { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600' },
-                  { icon: 'Film', label: 'Kinopoisk', url: 'https://kinopoisk.ru', color: 'text-orange-600' },
-                  { icon: 'Package', label: 'Trashbox', url: 'https://trashbox.ru', color: 'text-gray-600' },
-                  { icon: 'Landmark', label: 'Сбербанк', url: 'https://online.sberbank.ru', color: 'text-green-600' },
                   { icon: 'MessageSquare', label: 'Avito', url: 'https://avito.ru', color: 'text-blue-500' },
                 ].map((item) => (
                   <Card 

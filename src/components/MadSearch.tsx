@@ -40,12 +40,6 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
       description: 'Поиск информации, почта Яндекс, карты, погода, новости',
       favicon: '🔍'
     },
-    {
-      title: 'Mail.ru - почта и портал',
-      url: 'https://mail.ru',
-      description: 'Электронная почта Mail.ru, новости, поиск, развлечения',
-      favicon: '✉️'
-    },
 
     {
       title: 'Википедия - свободная энциклопедия',
@@ -89,12 +83,7 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
       description: 'Авито - купить и продать товары, услуги, недвижимость',
       favicon: '📢'
     },
-    {
-      title: 'Кинопоиск',
-      url: 'https://kinopoisk.ru',
-      description: 'Кинопоиск - фильмы, сериалы, рейтинги и рецензии',
-      favicon: '🎬'
-    },
+
     {
       title: 'Лайфхакер',
       url: 'https://lifehacker.ru',
@@ -125,18 +114,8 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
       description: 'Kion - смотрите фильмы, сериалы и ТВ онлайн',
       favicon: '📺'
     },
-    {
-      title: 'Trashbox - файлообменник',
-      url: 'https://trashbox.ru',
-      description: 'Trashbox - загружайте и делитесь файлами онлайн',
-      favicon: '📦'
-    },
-    {
-      title: 'Сбербанк Онлайн',
-      url: 'https://online.sberbank.ru',
-      description: 'Сбербанк - онлайн банкинг, переводы, платежи',
-      favicon: '🏦'
-    },
+
+
     {
       title: 'Тинькофф Банк',
       url: 'https://tinkoff.ru',
