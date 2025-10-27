@@ -26,6 +26,7 @@ const Index = () => {
   const [chatInput, setChatInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [iframeError, setIframeError] = useState(false);
+  const [translateLang, setTranslateLang] = useState('ru');
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
@@ -64,6 +65,17 @@ const Index = () => {
   const toggleDesktopMode = () => {
     setDesktopMode(!desktopMode);
     toast.success(desktopMode ? 'Мобильная версия' : 'Версия для ПК');
+  };
+
+  const translateCurrentSite = () => {
+    if (!currentUrl) {
+      toast.error('Нет открытого сайта для перевода');
+      return;
+    }
+    const translatedUrl = `https://translate.google.com/translate?sl=auto&tl=${translateLang}&u=${encodeURIComponent(currentUrl)}`;
+    setCurrentUrl(translatedUrl);
+    setUrl(translatedUrl);
+    toast.success('Сайт переводится...');
   };
 
   const handleCalculate = () => {
@@ -221,7 +233,7 @@ const Index = () => {
                   <CardHeader>
                     <CardTitle className="text-base">Настройки просмотра</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-3">
                     <Button 
                       variant={desktopMode ? "default" : "outline"} 
                       className="w-full justify-start gap-2"
@@ -230,6 +242,31 @@ const Index = () => {
                       <Icon name="Monitor" size={18} />
                       {desktopMode ? 'Версия для ПК включена' : 'Версия для ПК'}
                     </Button>
+                    
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Перевести сайт</label>
+                      <div className="flex gap-2">
+                        <select 
+                          value={translateLang} 
+                          onChange={(e) => setTranslateLang(e.target.value)}
+                          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+                        >
+                          <option value="ru">Русский</option>
+                          <option value="en">English</option>
+                          <option value="zh-CN">中文</option>
+                          <option value="es">Español</option>
+                          <option value="fr">Français</option>
+                          <option value="de">Deutsch</option>
+                          <option value="ja">日本語</option>
+                          <option value="ko">한국어</option>
+                          <option value="ar">العربية</option>
+                          <option value="pt">Português</option>
+                        </select>
+                        <Button onClick={translateCurrentSite} size="icon" className="shrink-0">
+                          <Icon name="Languages" size={18} />
+                        </Button>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -413,6 +450,9 @@ const Index = () => {
                   { icon: 'MessageCircle', label: 'VK', url: 'https://vk.com', color: 'text-blue-500' },
                   { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600' },
                   { icon: 'Film', label: 'Kinopoisk', url: 'https://kinopoisk.ru', color: 'text-orange-600' },
+                  { icon: 'Package', label: 'Trashbox', url: 'https://trashbox.ru', color: 'text-gray-600' },
+                  { icon: 'Landmark', label: 'Сбербанк', url: 'https://online.sberbank.ru', color: 'text-green-600' },
+                  { icon: 'MessageSquare', label: 'Avito', url: 'https://avito.ru', color: 'text-blue-500' },
                 ].map((item) => (
                   <Card 
                     key={item.label} 
