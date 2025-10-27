@@ -117,16 +117,24 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
       url: 'https://dzen.ru',
       description: 'Яндекс Дзен - статьи, видео, новости по интересам',
       favicon: '📱'
+    },
+    {
+      title: 'Poehali.Dev - создание сайтов',
+      url: 'https://poehali.dev',
+      description: 'Poehali.Dev - разработка сайтов через русский язык с ИИ',
+      favicon: '🚀'
     }
   ];
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  const performSearch = (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      setResults([]);
+      return;
+    }
 
     setIsLoading(true);
 
-    const lowerQuery = query.toLowerCase();
+    const lowerQuery = searchQuery.toLowerCase();
     const searchResults = popularSites.filter(site => {
       const titleMatch = site.title.toLowerCase().includes(lowerQuery);
       const descMatch = site.description.toLowerCase().includes(lowerQuery);
@@ -144,8 +152,12 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
     });
 
     setResults(searchResults);
-
     setIsLoading(false);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    performSearch(query);
   };
 
   return (
@@ -165,7 +177,11 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
               <Input
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  const newQuery = e.target.value;
+                  setQuery(newQuery);
+                  performSearch(newQuery);
+                }}
                 placeholder="Введите поисковый запрос..."
                 className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-lg"
               />
@@ -183,23 +199,6 @@ const MadSearch = ({ onNavigate, initialQuery = '' }: MadSearchProps) => {
                 </Button>
               )}
             </div>
-            {!results.length && (
-              <div className="flex justify-center gap-3 mt-6">
-                <Button type="submit" variant="outline" disabled={isLoading}>
-                  Поиск Mad Search
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={() => {
-                    const randomSite = popularSites[Math.floor(Math.random() * popularSites.length)];
-                    onNavigate(randomSite.url);
-                  }}
-                >
-                  Мне повезёт!
-                </Button>
-              </div>
-            )}
           </div>
         </form>
 
