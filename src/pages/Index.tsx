@@ -26,7 +26,7 @@ const Index = () => {
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
-      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+      const searchUrl = `https://yandex.ru/search/?text=${encodeURIComponent(query)}`;
       setUrl(searchUrl);
       setCurrentUrl(searchUrl);
       setSearchQuery('');
@@ -42,7 +42,7 @@ const Index = () => {
         if (url.includes('.')) {
           finalUrl = 'https://' + url;
         } else {
-          finalUrl = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
+          finalUrl = `https://yandex.ru/search/?text=${encodeURIComponent(url)}`;
         }
       }
       setUrl(finalUrl);
@@ -80,7 +80,8 @@ const Index = () => {
   const sendMessage = async () => {
     if (!chatInput.trim() || isLoading) return;
 
-    const userMessage = { role: 'user' as const, content: chatInput };
+    const messageText = chatInput.trim();
+    const userMessage = { role: 'user' as const, content: messageText };
     setChatMessages([...chatMessages, userMessage]);
     setChatInput('');
     setIsLoading(true);
@@ -92,7 +93,7 @@ const Index = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: chatInput,
+          message: messageText,
           apiKey: 'madai_EyxjfmsyDZWU35NR1BFFmMVBid8Zk6iWWT8V26iyRxM'
         })
       });
@@ -345,7 +346,7 @@ const Index = () => {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Поиск в Google или введите URL"
+                      placeholder="Поиск в Яндекс или введите URL"
                       className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
                     />
                     <Button type="submit" size="icon" variant="ghost" className="shrink-0">
