@@ -1,0 +1,37 @@
+{
+  "tests": [
+    {
+      "name": "Search for VK",
+      "method": "GET",
+      "path": "/?q=vk",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "query": "vk",
+        "count": "number",
+        "results": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Search for anime",
+      "method": "GET",
+      "path": "/?q=anime",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "query": "anime",
+        "results": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Missing query parameter",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

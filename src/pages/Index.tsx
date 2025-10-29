@@ -28,12 +28,34 @@ const Index = () => {
   const [iframeError, setIframeError] = useState(false);
   const [translateLang, setTranslateLang] = useState('ru');
   const [showSponsors, setShowSponsors] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = async (query: string) => {
     if (query.trim()) {
       setSearchQuery(query);
-      setShowMadSearch(true);
-      setCurrentUrl('');
+      setIsSearching(true);
+      
+      // Search in database
+      try {
+        const response = await fetch(`https://functions.poehali.dev/cbd0d71b-082e-47d1-b64d-49e05e94249d?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        if (data.results && data.results.length > 0) {
+          setSearchResults(data.results);
+        } else {
+          setSearchResults([]);
+          setShowMadSearch(true);
+          setCurrentUrl('');
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        setSearchResults([]);
+        setShowMadSearch(true);
+        setCurrentUrl('');
+      }
+      
+      setIsSearching(false);
     }
   };
 
@@ -445,7 +467,49 @@ const Index = () => {
                 </form>
               </div>
 
-              {!showSponsors ? (
+              {isSearching && (
+                <div className="text-center text-gray-600">
+                  <Icon name="Loader2" size={24} className="animate-spin mx-auto mb-2" />
+                  Ищу сайты...
+                </div>
+              )}
+
+              {searchResults.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-800">Найденные сайты</h2>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setSearchResults([])}
+                    >
+                      Закрыть
+                    </Button>
+                  </div>
+                  <div className="grid gap-3">
+                    {searchResults.map((site, index) => (
+                      <Card 
+                        key={index}
+                        className="hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => handleNavigate(site.url)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-800">{site.title}</h3>
+                              <p className="text-sm text-gray-600 line-clamp-2">{site.description}</p>
+                              <p className="text-xs text-blue-600 mt-1">{site.url}</p>
+                            </div>
+                            <Icon name="ExternalLink" size={16} className="text-gray-400 shrink-0 mt-1" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!showSponsors && searchResults.length === 0 && !isSearching && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
                     { icon: 'MessageCircle', label: 'VK Channel', url: 'https://vk.com/madstudiosofc', color: 'text-blue-500', openInApp: true },
