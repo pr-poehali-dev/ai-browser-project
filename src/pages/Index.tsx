@@ -448,7 +448,8 @@ const Index = () => {
               {!showSponsors ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
-                    { icon: 'MessageCircle', label: 'VK Channel', url: 'https://vk.com/madstudiosofc', color: 'text-blue-500', openInApp: false },
+                    { icon: 'MessageCircle', label: 'VK Channel', url: 'https://vk.com/madstudiosofc', color: 'text-blue-500', openInApp: true },
+                    { icon: 'MessageSquare', label: 'VK', url: 'https://vk.com', color: 'text-blue-600', openInApp: false },
                     { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400', openInApp: true },
                     { icon: 'Rocket', label: 'Poehali.dev', url: 'https://poehali.dev', color: 'text-orange-500', openInApp: false },
                     { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600', openInApp: false },
