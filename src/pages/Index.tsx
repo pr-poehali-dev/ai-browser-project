@@ -27,6 +27,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [iframeError, setIframeError] = useState(false);
   const [translateLang, setTranslateLang] = useState('ru');
+  const [showSponsors, setShowSponsors] = useState(false);
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
@@ -63,8 +64,12 @@ const Index = () => {
   };
 
   const toggleDesktopMode = () => {
-    setDesktopMode(!desktopMode);
-    toast.success(desktopMode ? 'Мобильная версия' : 'Версия для ПК');
+    const newMode = !desktopMode;
+    setDesktopMode(newMode);
+    toast.success(newMode ? 'Версия для ПК' : 'Мобильная версия');
+    if (currentUrl) {
+      setCurrentUrl(currentUrl + '?r=' + Date.now());
+    }
   };
 
   const translateCurrentSite = () => {
@@ -380,6 +385,7 @@ const Index = () => {
               title="Browser Content"
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"
               onError={() => setIframeError(true)}
+              style={desktopMode ? { width: '100%', minWidth: '1024px' } : {}}
             />
             {iframeError && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-white p-8">
@@ -439,32 +445,74 @@ const Index = () => {
                 </form>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {[
-                  { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600', openInApp: false },
-                  { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400', openInApp: true },
-                  { icon: 'MessageCircle', label: 'VK', url: 'https://vk.com', color: 'text-blue-500', openInApp: false },
-                  { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600', openInApp: false },
-                  { icon: 'MessageSquare', label: 'Avito', url: 'https://avito.ru', color: 'text-blue-500', openInApp: false },
-                ].map((item) => (
-                  <Card 
-                    key={item.label} 
-                    className="hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => {
-                      if (item.openInApp) {
-                        window.open(item.url, '_blank');
-                      } else {
-                        handleNavigate(item.url);
-                      }
-                    }}
+              {!showSponsors ? (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {[
+                    { icon: 'MessageCircle', label: 'VK Channel', url: 'https://vk.com/madstudiosofc', color: 'text-blue-500', openInApp: false },
+                    { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400', openInApp: true },
+                    { icon: 'Rocket', label: 'Poehali.dev', url: 'https://poehali.dev', color: 'text-orange-500', openInApp: false },
+                    { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600', openInApp: false },
+                    { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600', openInApp: false },
+                    { icon: 'Users', label: 'Сайты спонсоров', url: 'sponsors', color: 'text-green-500', openInApp: false, isSpecial: true },
+                  ].map((item) => (
+                    <Card 
+                      key={item.label} 
+                      className="hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => {
+                        if (item.isSpecial && item.url === 'sponsors') {
+                          setShowSponsors(true);
+                          return;
+                        }
+                        if (item.openInApp) {
+                          window.open(item.url, '_blank');
+                        } else {
+                          handleNavigate(item.url);
+                        }
+                      }}
+                    >
+                      <CardContent className="flex flex-col items-center justify-center p-6 gap-2">
+                        <Icon name={item.icon} size={32} className={item.color} />
+                        <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowSponsors(false)}
+                    className="mb-4"
                   >
-                    <CardContent className="flex flex-col items-center justify-center p-6 gap-2">
-                      <Icon name={item.icon} size={32} className={item.color} />
-                      <span className="text-sm font-medium text-gray-700">{item.label}</span>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                    <Icon name="ArrowLeft" size={16} className="mr-2" />
+                    Назад
+                  </Button>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {[
+                      { icon: 'Package', label: 'Trashbox.ru', url: 'https://trashbox.ru', color: 'text-purple-500', openInApp: true },
+                      { icon: 'Rocket', label: 'Poehali.dev', url: 'https://poehali.dev', color: 'text-orange-500', openInApp: false },
+                    ].map((item) => (
+                      <Card 
+                        key={item.label} 
+                        className="hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => {
+                          if (item.openInApp) {
+                            window.open(item.url, '_blank');
+                          } else {
+                            handleNavigate(item.url);
+                          }
+                        }}
+                      >
+                        <CardContent className="flex flex-col items-center justify-center p-6 gap-2">
+                          <Icon name={item.icon} size={32} className={item.color} />
+                          <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
