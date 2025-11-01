@@ -28,6 +28,12 @@ const Index = () => {
   const [iframeError, setIframeError] = useState(false);
   const [translateLang, setTranslateLang] = useState('ru');
   const [showSponsors, setShowSponsors] = useState(false);
+  const [fractionNum1, setFractionNum1] = useState('');
+  const [fractionDen1, setFractionDen1] = useState('');
+  const [fractionNum2, setFractionNum2] = useState('');
+  const [fractionDen2, setFractionDen2] = useState('');
+  const [fractionOp, setFractionOp] = useState('+');
+  const [fractionResult, setFractionResult] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showVideos, setShowVideos] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
@@ -43,6 +49,7 @@ const Index = () => {
     { icon: 'ShoppingBag', label: 'Avito', url: 'https://avito.ru', color: 'text-green-600', openInApp: false, tags: ['avito', 'авито', 'объявления', 'покупки', 'продажи'] },
     { icon: 'Package', label: 'Trashbox.ru', url: 'https://trashbox.ru', color: 'text-purple-500', openInApp: true, tags: ['trashbox', 'траш', 'железо', 'компьютеры'] },
     { icon: 'Swords', label: 'Warzone', url: 'http://warzonepolitik.wuaze.com', color: 'text-red-600', openInApp: false, tags: ['warzone', 'варзон', 'игра', 'политика'] },
+    { icon: 'Bot', label: 'ChatGPT', url: 'https://chatgpt.com', color: 'text-emerald-500', openInApp: false, tags: ['chatgpt', 'чатгпт', 'гпт', 'ai', 'ии', 'искусственный интеллект', 'openai'] },
   ];
 
   const handleSearch = (query: string) => {
@@ -199,6 +206,63 @@ const Index = () => {
 
   const calcButtons = ['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', '=', '+', 'C'];
 
+  const gcd = (a: number, b: number): number => {
+    return b === 0 ? a : gcd(b, a % b);
+  };
+
+  const calculateFractions = () => {
+    const n1 = parseInt(fractionNum1) || 0;
+    const d1 = parseInt(fractionDen1) || 1;
+    const n2 = parseInt(fractionNum2) || 0;
+    const d2 = parseInt(fractionDen2) || 1;
+
+    if (d1 === 0 || d2 === 0) {
+      toast.error('Знаменатель не может быть нулём');
+      return;
+    }
+
+    let resultNum = 0;
+    let resultDen = 1;
+
+    switch (fractionOp) {
+      case '+':
+        resultNum = n1 * d2 + n2 * d1;
+        resultDen = d1 * d2;
+        break;
+      case '-':
+        resultNum = n1 * d2 - n2 * d1;
+        resultDen = d1 * d2;
+        break;
+      case '*':
+        resultNum = n1 * n2;
+        resultDen = d1 * d2;
+        break;
+      case '/':
+        if (n2 === 0) {
+          toast.error('Деление на ноль');
+          return;
+        }
+        resultNum = n1 * d2;
+        resultDen = d1 * n2;
+        break;
+    }
+
+    const divisor = gcd(Math.abs(resultNum), Math.abs(resultDen));
+    resultNum = resultNum / divisor;
+    resultDen = resultDen / divisor;
+
+    if (resultDen < 0) {
+      resultNum = -resultNum;
+      resultDen = -resultDen;
+    }
+
+    if (resultDen === 1) {
+      setFractionResult(`${resultNum}`);
+    } else {
+      setFractionResult(`${resultNum}/${resultDen}`);
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-white">
       <div className="flex items-center gap-2 p-3 border-b shadow-sm bg-white">
@@ -307,36 +371,108 @@ const Index = () => {
               </TabsContent>
 
               <TabsContent value="calculator" className="mt-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Калькулятор</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Input
-                        value={calcInput}
-                        onChange={(e) => setCalcInput(e.target.value)}
-                        placeholder="0"
-                        className="text-right text-lg font-mono"
-                      />
-                      <div className="text-right text-2xl font-bold text-primary min-h-[32px]">
-                        {calcResult}
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Калькулятор</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Input
+                          value={calcInput}
+                          onChange={(e) => setCalcInput(e.target.value)}
+                          placeholder="0"
+                          className="text-right text-lg font-mono"
+                        />
+                        <div className="text-right text-2xl font-bold text-primary min-h-[32px]">
+                          {calcResult}
+                        </div>
                       </div>
-                    </div>
-                    <div className="grid grid-cols-4 gap-2">
-                      {calcButtons.map((btn) => (
-                        <Button
-                          key={btn}
-                          variant={btn === '=' ? 'default' : btn === 'C' ? 'destructive' : 'outline'}
-                          onClick={() => handleCalcButton(btn)}
-                          className="h-12 text-lg font-semibold"
+                      <div className="grid grid-cols-4 gap-2">
+                        {calcButtons.map((btn) => (
+                          <Button
+                            key={btn}
+                            variant={btn === '=' ? 'default' : btn === 'C' ? 'destructive' : 'outline'}
+                            onClick={() => handleCalcButton(btn)}
+                            className="h-12 text-lg font-semibold"
+                          >
+                            {btn}
+                          </Button>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Калькулятор дробей</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1">
+                          <div className="flex flex-col items-center gap-1">
+                            <Input
+                              type="number"
+                              value={fractionNum1}
+                              onChange={(e) => setFractionNum1(e.target.value)}
+                              placeholder="числитель"
+                              className="text-center"
+                            />
+                            <div className="w-full h-[2px] bg-border"></div>
+                            <Input
+                              type="number"
+                              value={fractionDen1}
+                              onChange={(e) => setFractionDen1(e.target.value)}
+                              placeholder="знаменатель"
+                              className="text-center"
+                            />
+                          </div>
+                        </div>
+
+                        <select
+                          value={fractionOp}
+                          onChange={(e) => setFractionOp(e.target.value)}
+                          className="w-12 h-12 text-center text-xl font-bold border rounded-md"
                         >
-                          {btn}
-                        </Button>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                          <option value="+">+</option>
+                          <option value="-">−</option>
+                          <option value="*">×</option>
+                          <option value="/">÷</option>
+                        </select>
+
+                        <div className="flex-1">
+                          <div className="flex flex-col items-center gap-1">
+                            <Input
+                              type="number"
+                              value={fractionNum2}
+                              onChange={(e) => setFractionNum2(e.target.value)}
+                              placeholder="числитель"
+                              className="text-center"
+                            />
+                            <div className="w-full h-[2px] bg-border"></div>
+                            <Input
+                              type="number"
+                              value={fractionDen2}
+                              onChange={(e) => setFractionDen2(e.target.value)}
+                              placeholder="знаменатель"
+                              className="text-center"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button onClick={calculateFractions} className="w-full" size="lg">
+                        Вычислить
+                      </Button>
+
+                      {fractionResult && (
+                        <div className="text-center text-2xl font-bold text-primary p-4 bg-secondary rounded-lg">
+                          = {fractionResult}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
               </TabsContent>
 
               <TabsContent value="ai" className="mt-4">
