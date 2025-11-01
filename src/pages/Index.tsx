@@ -522,6 +522,7 @@ const Index = () => {
               {!showSponsors && !showVideos && searchResults.length === 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
+                    ...allSites.slice(0, 6),
                     { icon: 'Video', label: 'Видео', url: 'videos', color: 'text-red-500', openInApp: false, isSpecial: true, tags: [] },
                     { icon: 'Users', label: 'Сайты спонсоров', url: 'sponsors', color: 'text-green-500', openInApp: false, isSpecial: true, tags: [] },
                   ].map((item) => (
