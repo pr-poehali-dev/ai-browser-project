@@ -650,7 +650,11 @@ const Index = () => {
                   </Button>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {allSites.map((item) => (
+                    {allSites.filter(site => 
+                      site.label === 'Trashbox.ru' || 
+                      site.label === 'Poehali.dev' || 
+                      site.label === 'Warzone'
+                    ).map((item) => (
                       <Card 
                         key={item.label} 
                         className="hover:shadow-md transition-shadow cursor-pointer"
