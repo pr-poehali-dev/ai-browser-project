@@ -371,7 +371,8 @@ const Index = () => {
               </TabsContent>
 
               <TabsContent value="calculator" className="mt-4">
-                <div className="space-y-4">
+                <ScrollArea className="h-[calc(100vh-180px)]">
+                  <div className="space-y-4 pr-4">
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-base">Калькулятор</CardTitle>
@@ -472,7 +473,8 @@ const Index = () => {
                       )}
                     </CardContent>
                   </Card>
-                </div>
+                  </div>
+                </ScrollArea>
               </TabsContent>
 
               <TabsContent value="ai" className="mt-4">
