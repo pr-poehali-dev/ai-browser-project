@@ -29,6 +29,9 @@ const Index = () => {
   const [translateLang, setTranslateLang] = useState('ru');
   const [showSponsors, setShowSponsors] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showVideos, setShowVideos] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
+  const [savedVideos, setSavedVideos] = useState<string[]>([]);
 
   const allSites = [
     { icon: 'MessageCircle', label: 'VK Channel', url: 'https://vk.com/madstudiosofc', color: 'text-blue-500', openInApp: true, tags: ['vk', 'социальная сеть', 'канал', 'mad'] },
@@ -516,16 +519,20 @@ const Index = () => {
                 </div>
               )}
 
-              {!showSponsors && searchResults.length === 0 ? (
+              {!showSponsors && !showVideos && searchResults.length === 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
-                    ...allSites.slice(0, 6),
+                    { icon: 'Video', label: 'Видео', url: 'videos', color: 'text-red-500', openInApp: false, isSpecial: true, tags: [] },
                     { icon: 'Users', label: 'Сайты спонсоров', url: 'sponsors', color: 'text-green-500', openInApp: false, isSpecial: true, tags: [] },
                   ].map((item) => (
                     <Card 
                       key={item.label} 
                       className="hover:shadow-md transition-shadow cursor-pointer"
                       onClick={() => {
+                        if (item.isSpecial && item.url === 'videos') {
+                          setShowVideos(true);
+                          return;
+                        }
                         if (item.isSpecial && item.url === 'sponsors') {
                           setShowSponsors(true);
                           return;
@@ -544,6 +551,92 @@ const Index = () => {
                     </Card>
                   ))}
                 </div>
+              ) : showVideos ? (
+                <div className="space-y-4">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setShowVideos(false)}
+                    className="mb-4"
+                  >
+                    <Icon name="ArrowLeft" size={16} className="mr-2" />
+                    Назад
+                  </Button>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Добавить видео</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <form onSubmit={(e) => {
+                        e.preventDefault();
+                        if (videoUrl.trim()) {
+                          setSavedVideos([...savedVideos, videoUrl]);
+                          setVideoUrl('');
+                          toast.success('Видео добавлено');
+                        }
+                      }} className="flex gap-2">
+                        <Input
+                          type="text"
+                          value={videoUrl}
+                          onChange={(e) => setVideoUrl(e.target.value)}
+                          placeholder="Вставьте ссылку на видео (YouTube, VK и др.)"
+                          className="flex-1"
+                        />
+                        <Button type="submit">
+                          <Icon name="Plus" size={16} className="mr-2" />
+                          Добавить
+                        </Button>
+                      </form>
+                    </CardContent>
+                  </Card>
+
+                  {savedVideos.length > 0 ? (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-800">Сохранённые видео</h3>
+                      <div className="grid gap-4">
+                        {savedVideos.map((video, index) => (
+                          <Card key={index}>
+                            <CardContent className="p-4">
+                              <div className="flex items-start gap-3">
+                                <Icon name="Video" size={24} className="text-red-500 shrink-0 mt-1" />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm text-gray-600 break-all">{video}</p>
+                                </div>
+                                <div className="flex gap-2 shrink-0">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      window.open(video, '_blank');
+                                    }}
+                                  >
+                                    <Icon name="ExternalLink" size={16} />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      setSavedVideos(savedVideos.filter((_, i) => i !== index));
+                                      toast.success('Видео удалено');
+                                    }}
+                                  >
+                                    <Icon name="Trash2" size={16} className="text-red-500" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center text-gray-500 py-8">
+                      <Icon name="Video" size={48} className="mx-auto mb-2 text-gray-300" />
+                      <p>Нет сохранённых видео</p>
+                      <p className="text-sm">Добавьте первое видео по ссылке</p>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="space-y-4">
                   <Button 
@@ -556,10 +649,7 @@ const Index = () => {
                   </Button>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {[
-                      { icon: 'Package', label: 'Trashbox.ru', url: 'https://trashbox.ru', color: 'text-purple-500', openInApp: true },
-                      { icon: 'Rocket', label: 'Poehali.dev', url: 'https://poehali.dev', color: 'text-orange-500', openInApp: false },
-                    ].map((item) => (
+                    {allSites.map((item) => (
                       <Card 
                         key={item.label} 
                         className="hover:shadow-md transition-shadow cursor-pointer"
