@@ -518,6 +518,7 @@ const Index = () => {
               {!showSponsors && searchResults.length === 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
+                    ...allSites.slice(0, 6),
                     { icon: 'Users', label: 'Сайты спонсоров', url: 'sponsors', color: 'text-green-500', openInApp: false, isSpecial: true, tags: [] },
                   ].map((item) => (
                     <Card 
@@ -554,7 +555,10 @@ const Index = () => {
                   </Button>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {allSites.map((item) => (
+                    {[
+                      { icon: 'Package', label: 'Trashbox.ru', url: 'https://trashbox.ru', color: 'text-purple-500', openInApp: true },
+                      { icon: 'Rocket', label: 'Poehali.dev', url: 'https://poehali.dev', color: 'text-orange-500', openInApp: false },
+                    ].map((item) => (
                       <Card 
                         key={item.label} 
                         className="hover:shadow-md transition-shadow cursor-pointer"
