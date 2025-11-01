@@ -40,6 +40,7 @@ const Index = () => {
     { icon: 'Rocket', label: 'Poehali.dev', url: 'https://poehali.dev', color: 'text-orange-500', openInApp: false, tags: ['поехали', 'разработка', 'сайты', 'код'] },
     { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600', openInApp: false, tags: ['кион', 'фильмы', 'сериалы', 'видео'] },
     { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600', openInApp: false, tags: ['рутуб', 'видео', 'rutube'] },
+    { icon: 'ShoppingBag', label: 'Avito', url: 'https://avito.ru', color: 'text-green-600', openInApp: false, tags: ['avito', 'авито', 'объявления', 'покупки', 'продажи'] },
     { icon: 'Package', label: 'Trashbox.ru', url: 'https://trashbox.ru', color: 'text-purple-500', openInApp: true, tags: ['trashbox', 'траш', 'железо', 'компьютеры'] },
     { icon: 'Swords', label: 'Warzone', url: 'http://warzonepolitik.wuaze.com', color: 'text-red-600', openInApp: false, tags: ['warzone', 'варзон', 'игра', 'политика'] },
   ];
@@ -522,7 +523,7 @@ const Index = () => {
               {!showSponsors && !showVideos && searchResults.length === 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
-                    ...allSites.slice(0, 6),
+                    ...allSites.slice(0, 7),
                     { icon: 'Video', label: 'Видео', url: 'videos', color: 'text-red-500', openInApp: false, isSpecial: true, tags: [] },
                     { icon: 'Users', label: 'Сайты спонсоров', url: 'sponsors', color: 'text-green-500', openInApp: false, isSpecial: true, tags: [] },
                   ].map((item) => (
