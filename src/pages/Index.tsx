@@ -30,8 +30,10 @@ const Index = () => {
   const [showSponsors, setShowSponsors] = useState(false);
   const [fractionNum1, setFractionNum1] = useState('');
   const [fractionDen1, setFractionDen1] = useState('');
+  const [fractionWhole1, setFractionWhole1] = useState('');
   const [fractionNum2, setFractionNum2] = useState('');
   const [fractionDen2, setFractionDen2] = useState('');
+  const [fractionWhole2, setFractionWhole2] = useState('');
   const [fractionOp, setFractionOp] = useState('+');
   const [fractionResult, setFractionResult] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -211,10 +213,26 @@ const Index = () => {
   };
 
   const calculateFractions = () => {
-    const n1 = parseInt(fractionNum1) || 0;
-    const d1 = parseInt(fractionDen1) || 1;
-    const n2 = parseInt(fractionNum2) || 0;
-    const d2 = parseInt(fractionDen2) || 1;
+    const w1 = parseInt(fractionWhole1) || 0;
+    const w2 = parseInt(fractionWhole2) || 0;
+    let n1 = parseInt(fractionNum1) || 0;
+    let d1 = parseInt(fractionDen1) || 1;
+    let n2 = parseInt(fractionNum2) || 0;
+    let d2 = parseInt(fractionDen2) || 1;
+
+    if (!fractionNum1 && !fractionDen1 && fractionWhole1) {
+      n1 = w1;
+      d1 = 1;
+    } else if (w1 !== 0) {
+      n1 = w1 * d1 + n1;
+    }
+
+    if (!fractionNum2 && !fractionDen2 && fractionWhole2) {
+      n2 = w2;
+      d2 = 1;
+    } else if (w2 !== 0) {
+      n2 = w2 * d2 + n2;
+    }
 
     if (d1 === 0 || d2 === 0) {
       toast.error('Знаменатель не может быть нулём');
@@ -259,7 +277,17 @@ const Index = () => {
     if (resultDen === 1) {
       setFractionResult(`${resultNum}`);
     } else {
-      setFractionResult(`${resultNum}/${resultDen}`);
+      const whole = Math.floor(Math.abs(resultNum) / resultDen);
+      const remainder = Math.abs(resultNum) % resultDen;
+      const sign = resultNum < 0 ? '-' : '';
+      
+      if (whole > 0 && remainder > 0) {
+        setFractionResult(`${sign}${whole} ${remainder}/${resultDen}`);
+      } else if (remainder === 0) {
+        setFractionResult(`${sign}${whole}`);
+      } else {
+        setFractionResult(`${resultNum}/${resultDen}`);
+      }
     }
   };
 
@@ -411,22 +439,31 @@ const Index = () => {
                     <CardContent className="space-y-4">
                       <div className="flex items-center gap-2">
                         <div className="flex-1">
-                          <div className="flex flex-col items-center gap-1">
+                          <div className="space-y-2">
                             <Input
                               type="number"
-                              value={fractionNum1}
-                              onChange={(e) => setFractionNum1(e.target.value)}
-                              placeholder="числитель"
-                              className="text-center"
+                              value={fractionWhole1}
+                              onChange={(e) => setFractionWhole1(e.target.value)}
+                              placeholder="целое"
+                              className="text-center text-sm"
                             />
-                            <div className="w-full h-[2px] bg-border"></div>
-                            <Input
-                              type="number"
-                              value={fractionDen1}
-                              onChange={(e) => setFractionDen1(e.target.value)}
-                              placeholder="знаменатель"
-                              className="text-center"
-                            />
+                            <div className="flex flex-col items-center gap-1">
+                              <Input
+                                type="number"
+                                value={fractionNum1}
+                                onChange={(e) => setFractionNum1(e.target.value)}
+                                placeholder="числ."
+                                className="text-center text-sm"
+                              />
+                              <div className="w-full h-[2px] bg-border"></div>
+                              <Input
+                                type="number"
+                                value={fractionDen1}
+                                onChange={(e) => setFractionDen1(e.target.value)}
+                                placeholder="знам."
+                                className="text-center text-sm"
+                              />
+                            </div>
                           </div>
                         </div>
 
@@ -442,22 +479,31 @@ const Index = () => {
                         </select>
 
                         <div className="flex-1">
-                          <div className="flex flex-col items-center gap-1">
+                          <div className="space-y-2">
                             <Input
                               type="number"
-                              value={fractionNum2}
-                              onChange={(e) => setFractionNum2(e.target.value)}
-                              placeholder="числитель"
-                              className="text-center"
+                              value={fractionWhole2}
+                              onChange={(e) => setFractionWhole2(e.target.value)}
+                              placeholder="целое"
+                              className="text-center text-sm"
                             />
-                            <div className="w-full h-[2px] bg-border"></div>
-                            <Input
-                              type="number"
-                              value={fractionDen2}
-                              onChange={(e) => setFractionDen2(e.target.value)}
-                              placeholder="знаменатель"
-                              className="text-center"
-                            />
+                            <div className="flex flex-col items-center gap-1">
+                              <Input
+                                type="number"
+                                value={fractionNum2}
+                                onChange={(e) => setFractionNum2(e.target.value)}
+                                placeholder="числ."
+                                className="text-center text-sm"
+                              />
+                              <div className="w-full h-[2px] bg-border"></div>
+                              <Input
+                                type="number"
+                                value={fractionDen2}
+                                onChange={(e) => setFractionDen2(e.target.value)}
+                                placeholder="знам."
+                                className="text-center text-sm"
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
