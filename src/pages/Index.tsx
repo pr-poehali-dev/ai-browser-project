@@ -28,12 +28,37 @@ const Index = () => {
   const [iframeError, setIframeError] = useState(false);
   const [translateLang, setTranslateLang] = useState('ru');
   const [showSponsors, setShowSponsors] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+
+  const allSites = [
+    { icon: 'MessageCircle', label: 'VK Channel', url: 'https://vk.com/madstudiosofc', color: 'text-blue-500', openInApp: true, tags: ['vk', 'социальная сеть', 'канал', 'mad'] },
+    { icon: 'MessageSquare', label: 'VK', url: 'https://vk.com', color: 'text-blue-600', openInApp: false, tags: ['vk', 'вконтакте', 'социальная сеть'] },
+    { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400', openInApp: true, tags: ['telegram', 'телеграм', 'канал', 'mad'] },
+    { icon: 'Rocket', label: 'Poehali.dev', url: 'https://poehali.dev', color: 'text-orange-500', openInApp: false, tags: ['поехали', 'разработка', 'сайты', 'код'] },
+    { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600', openInApp: false, tags: ['кион', 'фильмы', 'сериалы', 'видео'] },
+    { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600', openInApp: false, tags: ['рутуб', 'видео', 'rutube'] },
+    { icon: 'Package', label: 'Trashbox.ru', url: 'https://trashbox.ru', color: 'text-purple-500', openInApp: true, tags: ['trashbox', 'траш', 'железо', 'компьютеры'] },
+  ];
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
-      setSearchQuery(query);
-      setShowMadSearch(true);
-      setCurrentUrl('');
+      const lowerQuery = query.toLowerCase();
+      const results = allSites.filter(site => 
+        site.label.toLowerCase().includes(lowerQuery) ||
+        site.url.toLowerCase().includes(lowerQuery) ||
+        site.tags.some(tag => tag.includes(lowerQuery))
+      );
+      
+      if (results.length > 0) {
+        setSearchResults(results);
+        setShowMadSearch(false);
+        setCurrentUrl('');
+      } else {
+        setSearchQuery(query);
+        setShowMadSearch(true);
+        setCurrentUrl('');
+        setSearchResults([]);
+      }
     }
   };
 
@@ -434,7 +459,12 @@ const Index = () => {
                     <Input
                       type="text"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        if (!e.target.value.trim()) {
+                          setSearchResults([]);
+                        }
+                      }}
                       placeholder="Поиск в Mad Search или введите URL"
                       className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1"
                     />
@@ -445,16 +475,51 @@ const Index = () => {
                 </form>
               </div>
 
-              {!showSponsors ? (
+              {searchResults.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-800">Найденные сайты</h2>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => {
+                        setSearchResults([]);
+                        setSearchQuery('');
+                      }}
+                    >
+                      Закрыть
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {searchResults.map((site) => (
+                      <Card 
+                        key={site.label}
+                        className="hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => {
+                          if (site.openInApp) {
+                            window.open(site.url, '_blank');
+                          } else {
+                            handleNavigate(site.url);
+                          }
+                          setSearchResults([]);
+                          setSearchQuery('');
+                        }}
+                      >
+                        <CardContent className="flex flex-col items-center justify-center p-6 gap-2">
+                          <Icon name={site.icon} size={32} className={site.color} />
+                          <span className="text-sm font-medium text-gray-700">{site.label}</span>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!showSponsors && searchResults.length === 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
-                    { icon: 'MessageCircle', label: 'VK Channel', url: 'https://vk.com/madstudiosofc', color: 'text-blue-500', openInApp: true },
-                    { icon: 'MessageSquare', label: 'VK', url: 'https://vk.com', color: 'text-blue-600', openInApp: false },
-                    { icon: 'Send', label: 'Telegram channel', url: 'https://t.me/MadStudiosOFC', color: 'text-blue-400', openInApp: true },
-                    { icon: 'Rocket', label: 'Poehali.dev', url: 'https://poehali.dev', color: 'text-orange-500', openInApp: false },
-                    { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600', openInApp: false },
-                    { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600', openInApp: false },
-                    { icon: 'Users', label: 'Сайты спонсоров', url: 'sponsors', color: 'text-green-500', openInApp: false, isSpecial: true },
+                    ...allSites.slice(0, 6),
+                    { icon: 'Users', label: 'Сайты спонсоров', url: 'sponsors', color: 'text-green-500', openInApp: false, isSpecial: true, tags: [] },
                   ].map((item) => (
                     <Card 
                       key={item.label} 
