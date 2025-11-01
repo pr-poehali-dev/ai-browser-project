@@ -38,6 +38,7 @@ const Index = () => {
     { icon: 'Tv', label: 'Kion', url: 'https://kion.ru', color: 'text-purple-600', openInApp: false, tags: ['кион', 'фильмы', 'сериалы', 'видео'] },
     { icon: 'Play', label: 'Rutube', url: 'https://rutube.ru', color: 'text-blue-600', openInApp: false, tags: ['рутуб', 'видео', 'rutube'] },
     { icon: 'Package', label: 'Trashbox.ru', url: 'https://trashbox.ru', color: 'text-purple-500', openInApp: true, tags: ['trashbox', 'траш', 'железо', 'компьютеры'] },
+    { icon: 'Swords', label: 'Warzone', url: 'http://warzonepolitik.wuaze.com', color: 'text-red-600', openInApp: false, tags: ['warzone', 'варзон', 'игра', 'политика'] },
   ];
 
   const handleSearch = (query: string) => {
