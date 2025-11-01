@@ -36,6 +36,15 @@ const Index = () => {
   const [fractionWhole2, setFractionWhole2] = useState('');
   const [fractionOp, setFractionOp] = useState('+');
   const [fractionResult, setFractionResult] = useState('');
+  const [percentValue, setPercentValue] = useState('');
+  const [percentNumber, setPercentNumber] = useState('');
+  const [percentOp, setPercentOp] = useState('find');
+  const [percentResult, setPercentResult] = useState('');
+  const [convertValue, setConvertValue] = useState('');
+  const [convertFrom, setConvertFrom] = useState('m');
+  const [convertTo, setConvertTo] = useState('km');
+  const [convertCategory, setConvertCategory] = useState('length');
+  const [convertResult, setConvertResult] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showVideos, setShowVideos] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
@@ -302,6 +311,88 @@ const Index = () => {
     setFractionOp('+');
   };
 
+  const calculatePercent = () => {
+    const num = parseFloat(percentNumber);
+    const percent = parseFloat(percentValue);
+    
+    if (isNaN(num) || isNaN(percent)) {
+      setPercentResult('Ошибка: введите числа');
+      return;
+    }
+
+    let result = 0;
+    if (percentOp === 'find') {
+      result = (num * percent) / 100;
+      setPercentResult(`${percent}% от ${num} = ${result}`);
+    } else if (percentOp === 'add') {
+      result = num + (num * percent) / 100;
+      setPercentResult(`${num} + ${percent}% = ${result}`);
+    } else if (percentOp === 'subtract') {
+      result = num - (num * percent) / 100;
+      setPercentResult(`${num} - ${percent}% = ${result}`);
+    }
+  };
+
+  const clearPercentCalculator = () => {
+    setPercentValue('');
+    setPercentNumber('');
+    setPercentResult('');
+    setPercentOp('find');
+  };
+
+  const convertUnits = () => {
+    const value = parseFloat(convertValue);
+    
+    if (isNaN(value)) {
+      setConvertResult('Ошибка: введите число');
+      return;
+    }
+
+    const conversions: any = {
+      length: {
+        mm: 1,
+        cm: 10,
+        m: 1000,
+        km: 1000000,
+        in: 25.4,
+        ft: 304.8,
+        mi: 1609344
+      },
+      weight: {
+        mg: 1,
+        g: 1000,
+        kg: 1000000,
+        oz: 28349.5,
+        lb: 453592
+      },
+      temperature: {
+        c: (v: number) => v,
+        f: (v: number) => (v - 32) * 5/9,
+        k: (v: number) => v - 273.15
+      }
+    };
+
+    let result = 0;
+    
+    if (convertCategory === 'temperature') {
+      const toC = conversions.temperature[convertFrom](value);
+      if (convertTo === 'c') result = toC;
+      else if (convertTo === 'f') result = toC * 9/5 + 32;
+      else if (convertTo === 'k') result = toC + 273.15;
+    } else {
+      const cat = conversions[convertCategory];
+      const inBase = value * cat[convertFrom];
+      result = inBase / cat[convertTo];
+    }
+
+    setConvertResult(`${value} ${convertFrom.toUpperCase()} = ${result.toFixed(4)} ${convertTo.toUpperCase()}`);
+  };
+
+  const clearConverter = () => {
+    setConvertValue('');
+    setConvertResult('');
+  };
+
   return (
     <div className="flex flex-col h-screen bg-white">
       <div className="flex items-center gap-2 p-3 border-b shadow-sm bg-white">
@@ -531,6 +622,180 @@ const Index = () => {
                       {fractionResult && (
                         <div className="text-center text-2xl font-bold text-primary p-4 bg-secondary rounded-lg">
                           = {fractionResult}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Калькулятор процентов</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-3">
+                        <select
+                          value={percentOp}
+                          onChange={(e) => setPercentOp(e.target.value)}
+                          className="w-full p-2 border rounded-md"
+                        >
+                          <option value="find">Найти процент от числа</option>
+                          <option value="add">Прибавить процент</option>
+                          <option value="subtract">Вычесть процент</option>
+                        </select>
+
+                        <div className="flex gap-2">
+                          <Input
+                            type="number"
+                            value={percentNumber}
+                            onChange={(e) => setPercentNumber(e.target.value)}
+                            placeholder="Число"
+                            className="flex-1"
+                          />
+                          <Input
+                            type="number"
+                            value={percentValue}
+                            onChange={(e) => setPercentValue(e.target.value)}
+                            placeholder="Процент"
+                            className="flex-1"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button onClick={calculatePercent} className="flex-1" size="lg">
+                          Вычислить
+                        </Button>
+                        <Button onClick={clearPercentCalculator} variant="outline" size="lg">
+                          <Icon name="X" size={18} />
+                        </Button>
+                      </div>
+
+                      {percentResult && (
+                        <div className="text-center text-lg font-bold text-primary p-4 bg-secondary rounded-lg">
+                          {percentResult}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Конвертер величин</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-3">
+                        <select
+                          value={convertCategory}
+                          onChange={(e) => {
+                            setConvertCategory(e.target.value);
+                            if (e.target.value === 'length') {
+                              setConvertFrom('m');
+                              setConvertTo('km');
+                            } else if (e.target.value === 'weight') {
+                              setConvertFrom('kg');
+                              setConvertTo('g');
+                            } else {
+                              setConvertFrom('c');
+                              setConvertTo('f');
+                            }
+                          }}
+                          className="w-full p-2 border rounded-md"
+                        >
+                          <option value="length">Длина</option>
+                          <option value="weight">Вес</option>
+                          <option value="temperature">Температура</option>
+                        </select>
+
+                        <Input
+                          type="number"
+                          value={convertValue}
+                          onChange={(e) => setConvertValue(e.target.value)}
+                          placeholder="Введите значение"
+                        />
+
+                        <div className="flex gap-2 items-center">
+                          <select
+                            value={convertFrom}
+                            onChange={(e) => setConvertFrom(e.target.value)}
+                            className="flex-1 p-2 border rounded-md"
+                          >
+                            {convertCategory === 'length' && (
+                              <>
+                                <option value="mm">Миллиметр</option>
+                                <option value="cm">Сантиметр</option>
+                                <option value="m">Метр</option>
+                                <option value="km">Километр</option>
+                                <option value="in">Дюйм</option>
+                                <option value="ft">Фут</option>
+                                <option value="mi">Миля</option>
+                              </>
+                            )}
+                            {convertCategory === 'weight' && (
+                              <>
+                                <option value="mg">Миллиграмм</option>
+                                <option value="g">Грамм</option>
+                                <option value="kg">Килограмм</option>
+                                <option value="oz">Унция</option>
+                                <option value="lb">Фунт</option>
+                              </>
+                            )}
+                            {convertCategory === 'temperature' && (
+                              <>
+                                <option value="c">Цельсий</option>
+                                <option value="f">Фаренгейт</option>
+                                <option value="k">Кельвин</option>
+                              </>
+                            )}
+                          </select>
+                          <Icon name="ArrowRight" size={20} />
+                          <select
+                            value={convertTo}
+                            onChange={(e) => setConvertTo(e.target.value)}
+                            className="flex-1 p-2 border rounded-md"
+                          >
+                            {convertCategory === 'length' && (
+                              <>
+                                <option value="mm">Миллиметр</option>
+                                <option value="cm">Сантиметр</option>
+                                <option value="m">Метр</option>
+                                <option value="km">Километр</option>
+                                <option value="in">Дюйм</option>
+                                <option value="ft">Фут</option>
+                                <option value="mi">Миля</option>
+                              </>
+                            )}
+                            {convertCategory === 'weight' && (
+                              <>
+                                <option value="mg">Миллиграмм</option>
+                                <option value="g">Грамм</option>
+                                <option value="kg">Килограмм</option>
+                                <option value="oz">Унция</option>
+                                <option value="lb">Фунт</option>
+                              </>
+                            )}
+                            {convertCategory === 'temperature' && (
+                              <>
+                                <option value="c">Цельсий</option>
+                                <option value="f">Фаренгейт</option>
+                                <option value="k">Кельвин</option>
+                              </>
+                            )}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button onClick={convertUnits} className="flex-1" size="lg">
+                          Конвертировать
+                        </Button>
+                        <Button onClick={clearConverter} variant="outline" size="lg">
+                          <Icon name="X" size={18} />
+                        </Button>
+                      </div>
+
+                      {convertResult && (
+                        <div className="text-center text-lg font-bold text-primary p-4 bg-secondary rounded-lg">
+                          {convertResult}
                         </div>
                       )}
                     </CardContent>
