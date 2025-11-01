@@ -291,6 +291,17 @@ const Index = () => {
     }
   };
 
+  const clearFractionCalculator = () => {
+    setFractionWhole1('');
+    setFractionNum1('');
+    setFractionDen1('');
+    setFractionWhole2('');
+    setFractionNum2('');
+    setFractionDen2('');
+    setFractionResult('');
+    setFractionOp('+');
+  };
+
   return (
     <div className="flex flex-col h-screen bg-white">
       <div className="flex items-center gap-2 p-3 border-b shadow-sm bg-white">
@@ -508,9 +519,14 @@ const Index = () => {
                         </div>
                       </div>
 
-                      <Button onClick={calculateFractions} className="w-full" size="lg">
-                        Вычислить
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button onClick={calculateFractions} className="flex-1" size="lg">
+                          Вычислить
+                        </Button>
+                        <Button onClick={clearFractionCalculator} variant="outline" size="lg">
+                          <Icon name="X" size={18} />
+                        </Button>
+                      </div>
 
                       {fractionResult && (
                         <div className="text-center text-2xl font-bold text-primary p-4 bg-secondary rounded-lg">
